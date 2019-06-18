@@ -1,23 +1,19 @@
 const express = require('express');
-const app = express.Router();
-const Pokemon = require('./models/pokemon');
-app.use(express.json());
-app.use(express.urlencoded({extended : false}));
+const router = express.Router();
 
-app.get('/', (req, res) => {
-  res.send("welcome to the api")
-});
+// require model schema
+const Pokemon = require('./models/pokemon');
 
 
 // getting all pokemon (R)
-app.get('/pokemon', (req, res) => {
+router.get('/pokemon', (req, res) => {
   Pokemon.find({}).then((foundPokemon) => {
     console.log(foundPokemon);
     return res.json(foundPokemon);
   }).catch( err => res.json(err))
 });
 
-app.get('/pokemon/:id', (req, res) => {
+router.get('/pokemon/:id', (req, res) => {
   const { id } = req.params;
 
   Pokemon.findOne({id: id}).then((poke) => {
@@ -26,12 +22,8 @@ app.get('/pokemon/:id', (req, res) => {
   }).catch( err => res.json(err) );
 })
 
-app.listen(PORT, () => {
-  console.log(`listening to ${PORT}`);
-});
-
 // posting single pokemon (C)
-app.post('/pokemon', (req, res) => {
+router.post('/pokemon', (req, res) => {
   const { id, name, height, moves, image } = req.body
   
   Pokemon.create({ id, name, height, moves, image }).then((newPokemon) => {
@@ -42,7 +34,7 @@ app.post('/pokemon', (req, res) => {
 });
 
 // updating pokemon (U)
-app.put('/pokemon/:id', (req, res) => {
+router.put('/pokemon/:id', (req, res) => {
   const { id } = req.params
   const { name } = req.body
   console.log(name)
@@ -58,7 +50,7 @@ app.put('/pokemon/:id', (req, res) => {
 // })
 
 // Deleting documents/records (D)
-app.delete('/pokemon/:id', (req, res) => {
+router.delete('/pokemon/:id', (req, res) => {
   const { id } = req.params;
   Pokemon.findOneAndDelete({id}).then((p) => {
     if(!p) return res.send("Pokemon not found");
